@@ -187,7 +187,8 @@ int main(int argc, char **argv)
 
     if(!SimpleIOClass::InitMCP2200(vendorID, productID))
     {
-        SimpleIOClass::InitMCP2200(vendorID, productID2);
+        productID = productID2;
+        SimpleIOClass::InitMCP2200(vendorID, productID);
     }
 
     if (SimpleIOClass::IsConnected())

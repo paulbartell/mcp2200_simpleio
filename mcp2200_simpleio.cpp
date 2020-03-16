@@ -260,6 +260,7 @@ namespace SimpleIO {
 
 	string SimpleIOClass::GetDeviceInfo(unsigned int uiDeviceNo)
 	{
+		return "";
 	}
 
 	unsigned int SimpleIOClass::GetNoOfDevices(void)
@@ -274,6 +275,7 @@ namespace SimpleIO {
 
 	string SimpleIOClass::GetSelectedDeviceInfo(void)
 	{
+		return "";
 	}
 
 	bool SimpleIOClass::InitMCP2200 (unsigned int VendorID, unsigned int ProductID)
@@ -383,12 +385,14 @@ namespace SimpleIO {
 		// allocate bufA buffer, 2-dim array with 16 x 16 chars
 		if (( bufA = ( unsigned char** )malloc( 16*sizeof( unsigned char* ))) == NULL ) {
 			// error
+			return false;
 		}
 
 		for ( i = 0; i < 16; i++ )
 		{
 			if (( bufA[i] = ( unsigned char* )malloc( 16 )) == NULL ) {
 				/* error */
+				return false;
 			}
 			/* init the rows here */
 			memset (bufA[i], 0x00, sizeof(&bufA[i]));
@@ -427,7 +431,9 @@ namespace SimpleIO {
 
 		for (i=0; i<16; i++) {
 			hid_write (handle, bufA[i], 16);
+			free(bufA[i]);
 		}
+		free(bufA);
 
 		return true;
 	}
@@ -440,7 +446,7 @@ namespace SimpleIO {
 		return SetString(MCP2200_CFG_PROD,manufacturer);
 	}
 
-	char *SimpleIOClass::GetManufacturerString(void) {
+	std::string SimpleIOClass::GetManufacturerString(void) {
 		char *str;
 		wchar_t wstr[255];
 		hid_get_manufacturer_string(handle, wstr, 255);
@@ -448,10 +454,12 @@ namespace SimpleIO {
 		str=(char*)malloc(wcslen(wstr) + 1);
 		memset (str, 0x00, wcslen(wstr)+1);
 		int ret=wcstombs(str, wstr, wcslen(wstr));
-		return (char *)str;
+		std::string retVal = std::string(str);
+		free(str);
+		return retVal;
 	}
 
-	char *SimpleIOClass::GetProductString(void) {
+	std::string SimpleIOClass::GetProductString(void) {
 		char *str;
 		wchar_t wstr[255];
 		hid_get_product_string(handle, wstr, 255);
@@ -459,7 +467,9 @@ namespace SimpleIO {
 		str=(char*)malloc(wcslen(wstr) + 1);
 		memset (str, 0x00, wcslen(wstr)+1);
 		int ret=wcstombs(str, wstr, wcslen(wstr));
-		return (char *)str;
+		std::string retVal = std::string(str);
+		free(str);
+		return retVal;
 	}
 
 	bool SimpleIOClass::SetVendorIDProductID(int vendorID, int productID) {

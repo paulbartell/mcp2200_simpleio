@@ -68,8 +68,8 @@ public:
 	static bool SetManufacturerString(char *manufacturer);
 	static bool SetProductString(char *product);
 
-	static char *GetManufacturerString(void);
-	static char *GetProductString(void);
+	static std::string GetManufacturerString(void);
+	static std::string GetProductString(void);
 
 	static int GetBaudRate(void);
 	static int GetRxLED(void);
