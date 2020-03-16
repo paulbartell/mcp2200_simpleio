@@ -21,7 +21,7 @@ private:
 	static unsigned char buf[16];
 	static hid_device *handle;
 	static int needRead;
-	
+
 	static void SetCommand(int cmd);
 	static bool WriteBuf(void);
 	static void ReadAll(void);
@@ -51,10 +51,10 @@ public:
 	static unsigned int GetNoOfDevices(void);
 	static int GetSelectedDevice(void);
 	static string GetSelectedDeviceInfo(void);
-	static void InitMCP2200 (unsigned int VendorID, unsigned int ProductID);
+	static bool InitMCP2200 (unsigned int VendorID, unsigned int ProductID);
 	static bool IsConnected();
 	static int ReadEEPROM(unsigned int uiEEPAddress);
-	static bool ReadPin(unsigned int pin, unsigned int *returnvalue); 
+	static bool ReadPin(unsigned int pin, unsigned int *returnvalue);
 	static int ReadPinValue(unsigned int pin);
 	static bool ReadPort(unsigned int *returnvalue);
 	static int ReadPortValue();
@@ -62,9 +62,9 @@ public:
 	static bool SetPin(unsigned int pin);
 	static int WriteEEPROM(unsigned int uiEEPAddress, unsigned char ucValue);
 	static bool WritePort(unsigned int portValue);
-	
+
 	// extended API
-	
+
 	static bool SetManufacturerString(char *manufacturer);
 	static bool SetProductString(char *product);
 
@@ -82,8 +82,8 @@ public:
 	static int GetDefaultOutput(void);
 
 	static bool SetVendorIDProductID(int vendorID, int productID);
-	
-	
+
+
 };
 }
 #endif

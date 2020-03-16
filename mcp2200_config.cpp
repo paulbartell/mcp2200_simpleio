@@ -42,6 +42,7 @@ int main(int argc, char **argv)
 {
     int vendorID = 0x04D8;
     int productID = 0x00DF;
+    int productID2 = 0xECCD;
     bool setVidPidFlag = false;
     int setVid = 0x00;
     int setPid = 0x00;
@@ -184,7 +185,10 @@ int main(int argc, char **argv)
         exit(0);
     }
 
-    SimpleIOClass::InitMCP2200(vendorID, productID);
+    if(!SimpleIOClass::InitMCP2200(vendorID, productID))
+    {
+        SimpleIOClass::InitMCP2200(vendorID, productID2);
+    }
 
     if (SimpleIOClass::IsConnected())
     {

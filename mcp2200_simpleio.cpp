@@ -11,7 +11,7 @@ namespace SimpleIO {
 #define MCP2200_HID_COMMAND_READ_ALL 0x80
 
 #define MCP2200_SECRET_CONFIGURE    0x01
-#define MCP2200_CFG_PID_VID     0x00 
+#define MCP2200_CFG_PID_VID     0x00
 #define MCP2200_CFG_MANU        0x01
 #define MCP2200_CFG_PROD        0x02
 
@@ -36,16 +36,16 @@ namespace SimpleIO {
 	void SimpleIOClass::ReadAll()
 	{
 		int res;
-	
+
 		if(needRead) {
 			SetCommand(MCP2200_HID_COMMAND_READ_ALL);
-    
+
 			hid_write(handle, buf, MCP2200_HID_REPORT_SIZE);
 			res=hid_read(handle,buf,MCP2200_HID_REPORT_SIZE);
-	
+
 			needRead=0;
 		}
-	
+
 	}
 
 	void SimpleIOClass::SetRxLedModeBuf(unsigned int mode) {
@@ -58,17 +58,17 @@ namespace SimpleIO {
 			case ON:
 			buf[5]=buf[5] | 0b1000;
 			buf[7]=buf[7] & ~0b10100000;
-			break;			
+			break;
 			case TOGGLE:
 			buf[5]=buf[5] | 0b1000;
 			buf[7]=buf[7] & ~0b10100000;
 			buf[7]=buf[7] | 0b10100000;
-			break;			
+			break;
 			case BLINKSLOW:
 			buf[5]=buf[5] | 0b1000;
 			buf[7]=buf[7] & ~0b10100000;
 			buf[7]=buf[7] | 0b00100000;
-			break;			
+			break;
 			case BLINKFAST:
 			buf[5]=buf[5] | 0b1000;
 			buf[7]=buf[7] & ~0b10100000;
@@ -96,7 +96,7 @@ namespace SimpleIO {
 			buf[5]=buf[5] | 0b100;
 			buf[7]=buf[7] & ~0b01100000;
 			buf[7]=buf[7] | 0b00100000;
-			break;			
+			break;
 			case BLINKFAST:
 			buf[5]=buf[5] | 0b100;
 			buf[7]=buf[7] & ~0b01100000;
@@ -107,12 +107,12 @@ namespace SimpleIO {
 
 	void SimpleIOClass::SetBaudRateBuf(unsigned long BaudRateParam) {
 		unsigned long BaudRateDivisor=12000000/BaudRateParam - 1;
-		 
+
 		buf[8]=BaudRateDivisor >> 8;
 		buf[9]=BaudRateDivisor & 0xFF;
 	}
-	
-	void SimpleIOClass::SetIoMapBuf(unsigned char ioMap)	
+
+	void SimpleIOClass::SetIoMapBuf(unsigned char ioMap)
 	{
 		buf[4]=ioMap;
 	}
@@ -121,10 +121,10 @@ namespace SimpleIO {
 	{
 		if(onOff) {
 			buf[7]=buf[7] | 1;
-		} 
+		}
 		else
 		{
-			buf[7]=buf[7] & ~1;		
+			buf[7]=buf[7] & ~1;
 		}
 	}
 
@@ -132,10 +132,10 @@ namespace SimpleIO {
 	{
 		if(onOff) {
 			buf[5]=buf[5] | 0b10000000;
-		} 
+		}
 		else
 		{
-			buf[5]=buf[5] & ~0b10000000;		
+			buf[5]=buf[5] & ~0b10000000;
 		}
 	}
 
@@ -143,38 +143,38 @@ namespace SimpleIO {
 	{
 		if(onOff) {
 			buf[5]=buf[5] | 0b01000000;
-		} 
+		}
 		else
 		{
-			buf[5]=buf[5] & ~0b01000000;		
+			buf[5]=buf[5] & ~0b01000000;
 		}
 	}
 
-	bool SimpleIOClass::ClearPin(unsigned int pin) 
+	bool SimpleIOClass::ClearPin(unsigned int pin)
 	{
 		ReadAll();
-	
+
 		SetCommand(MCP2200_HID_COMMAND_SET_CLEAR_OUTPUT);
 		buf[11] = buf[10];
 		buf[12] = ~buf[11] | (1 << pin);
-	
-		return WriteBuf();	
+
+		return WriteBuf();
 	}
 
-	bool SimpleIOClass::ConfigureIO (unsigned char IOMap) 
+	bool SimpleIOClass::ConfigureIO (unsigned char IOMap)
 	{
 		ReadAll();
-	
+
 		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetIoMapBuf(IOMap);
 
-		return WriteBuf();	
+		return WriteBuf();
 	}
 
 	bool SimpleIOClass::ConfigureIoDefaultOutput(unsigned char ucIoMap, unsigned char ucDefValue)
 	{
 		ReadAll();
-	
+
 		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetIoMapBuf(ucIoMap);
 		buf[6]=ucDefValue;
@@ -182,10 +182,10 @@ namespace SimpleIO {
 		return WriteBuf();
 	}
 
-	bool SimpleIOClass::ConfigureMCP2200 (unsigned char IOMap, unsigned long BaudRateParam, unsigned int RxLEDMode, unsigned int TxLEDMode, bool FLOW, bool ULOAD,bool SSPND) 
+	bool SimpleIOClass::ConfigureMCP2200 (unsigned char IOMap, unsigned long BaudRateParam, unsigned int RxLEDMode, unsigned int TxLEDMode, bool FLOW, bool ULOAD,bool SSPND)
 	{
 		ReadAll();
-	
+
 		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetIoMapBuf(IOMap);
 		SetBaudRateBuf(BaudRateParam);
@@ -194,98 +194,96 @@ namespace SimpleIO {
 		SetHardwareFlowControlBuf(FLOW);
 		SetULoadBuf(ULOAD);
 		SetSuspendBuf(SSPND);
-	
-		return WriteBuf();	
+
+		return WriteBuf();
 	}
 
-	bool SimpleIOClass::fnHardwareFlowControl (unsigned int onOff) 
+	bool SimpleIOClass::fnHardwareFlowControl (unsigned int onOff)
 	{
 		ReadAll();
-	
-		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);	
+
+		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetHardwareFlowControlBuf(onOff);
 
 		return WriteBuf();
 	}
 
-	bool SimpleIOClass::fnRxLED (unsigned int mode) 
+	bool SimpleIOClass::fnRxLED (unsigned int mode)
 	{
 		ReadAll();
-	
+
 		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetRxLedModeBuf(mode);
 
-		return WriteBuf();		
+		return WriteBuf();
 	}
 
-	bool SimpleIOClass::fnSetBaudRate (unsigned long BaudRateParam) 
+	bool SimpleIOClass::fnSetBaudRate (unsigned long BaudRateParam)
 	{
 		ReadAll();
-		 
+
 		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetBaudRateBuf(BaudRateParam);
 
-		return WriteBuf();	
+		return WriteBuf();
 	}
 
-	bool SimpleIOClass::fnSuspend(unsigned int onOff) 
+	bool SimpleIOClass::fnSuspend(unsigned int onOff)
 	{
-		ReadAll();	
-		 
+		ReadAll();
+
 		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetSuspendBuf(onOff);
 
 		return WriteBuf();
 	}
 
-	bool SimpleIOClass::fnTxLED (unsigned int mode) 
+	bool SimpleIOClass::fnTxLED (unsigned int mode)
 	{
 		ReadAll();
-	
+
 		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetTxLedModeBuf(mode);
 
 		return WriteBuf();
 	}
 
-	bool SimpleIOClass::fnULoad(unsigned int onOff) 
+	bool SimpleIOClass::fnULoad(unsigned int onOff)
 	{
-		ReadAll();	
-		 
+		ReadAll();
+
 		SetCommand(MCP2200_HID_COMMAND_CONFIGURE);
 		SetULoadBuf(onOff);
 
 		return WriteBuf();
 	}
 
-	string SimpleIOClass::GetDeviceInfo(unsigned int uiDeviceNo) 
-	{	
-	}
-
-	unsigned int SimpleIOClass::GetNoOfDevices(void) 
+	string SimpleIOClass::GetDeviceInfo(unsigned int uiDeviceNo)
 	{
-		return 0;	
 	}
 
-	int SimpleIOClass::GetSelectedDevice(void) 
+	unsigned int SimpleIOClass::GetNoOfDevices(void)
 	{
-		return 0;	
+		return 0;
 	}
 
-	string SimpleIOClass::GetSelectedDeviceInfo(void) 
-	{	
+	int SimpleIOClass::GetSelectedDevice(void)
+	{
+		return 0;
 	}
 
-	void SimpleIOClass::InitMCP2200 (unsigned int VendorID, unsigned int ProductID) 
+	string SimpleIOClass::GetSelectedDeviceInfo(void)
+	{
+	}
+
+	bool SimpleIOClass::InitMCP2200 (unsigned int VendorID, unsigned int ProductID)
 	{
 
-		handle = hid_open(VendorID, ProductID, NULL);	
-		//	if(handle) {
-		//		hid_set_nonblocking(handle, 1);
-		//	}
+		handle = hid_open(VendorID, ProductID, NULL);
+		return handle != NULL;
 	}
 
-	bool SimpleIOClass::IsConnected() 
+	bool SimpleIOClass::IsConnected()
 	{
 		if(handle)
 			return true;
@@ -293,16 +291,16 @@ namespace SimpleIO {
 			return false;
 	}
 
-	int SimpleIOClass::ReadEEPROM(unsigned int uiEEPAddress) 
+	int SimpleIOClass::ReadEEPROM(unsigned int uiEEPAddress)
 	{
 		int res;
-	
+
 		SetCommand(MCP2200_HID_COMMAND_READ_EE);
 		buf[1]=uiEEPAddress;
-  
+
 		hid_write(handle, buf, MCP2200_HID_REPORT_SIZE);
 		res=hid_read(handle,buf,MCP2200_HID_REPORT_SIZE);
-  
+
 		return buf[3];
 	}
 
@@ -310,9 +308,9 @@ namespace SimpleIO {
 		unsigned int v=ReadPinValue(pin);
 		*returnvalue=v;
 		return true;
-	} 
+	}
 
-	int SimpleIOClass::ReadPinValue(unsigned int pin) 
+	int SimpleIOClass::ReadPinValue(unsigned int pin)
 	{
 		if (ReadPortValue() & (1 << pin))
 			return 1;
@@ -320,51 +318,51 @@ namespace SimpleIO {
 			return 0;
 	}
 
-	bool SimpleIOClass::ReadPort(unsigned int *returnvalue) 
+	bool SimpleIOClass::ReadPort(unsigned int *returnvalue)
 	{
 		unsigned int v=ReadPortValue();
 		*returnvalue=v;
 		return true;
 	}
 
-	int SimpleIOClass::ReadPortValue() 
+	int SimpleIOClass::ReadPortValue()
 	{
 		ReadAll();
 		return buf[10];
 	}
 
-	int SimpleIOClass::SelectDevice(unsigned int uiDeviceNo) 
+	int SimpleIOClass::SelectDevice(unsigned int uiDeviceNo)
 	{
 		return 0;
 	}
 
-	bool SimpleIOClass::SetPin(unsigned int pin) 
+	bool SimpleIOClass::SetPin(unsigned int pin)
 	{
 		ReadAll();
-	
+
 		SetCommand(MCP2200_HID_COMMAND_SET_CLEAR_OUTPUT);
 
 		buf[11] = buf[10] | (1 << pin);
 		buf[12] = ~buf[11];
-	
+
 		return WriteBuf();
 	}
 
-	int SimpleIOClass::WriteEEPROM(unsigned int uiEEPAddress, unsigned char ucValue) 
+	int SimpleIOClass::WriteEEPROM(unsigned int uiEEPAddress, unsigned char ucValue)
 	{
 		SetCommand(MCP2200_HID_COMMAND_WRITE_EE);
 		buf[1]=uiEEPAddress;
 		buf[2]=ucValue;
-  
+
 		return WriteBuf();
 	}
 
-	bool SimpleIOClass::WritePort(unsigned int portValue) 
+	bool SimpleIOClass::WritePort(unsigned int portValue)
 	{
 		SetCommand(MCP2200_HID_COMMAND_SET_CLEAR_OUTPUT);
 		buf[11] = portValue;
 		buf[12] = ~buf[11];
-	
+
 		return WriteBuf();
 	}
 
@@ -375,7 +373,7 @@ namespace SimpleIO {
 	// adapted from http://stackoverflow.com/a/23106926 reverse engineering
 	bool SimpleIOClass::SetString(int strType, char *str) {
 		unsigned char **bufA;
-	
+
 		char strA[64];
 		unsigned int i, k = 0;
 		unsigned char tmp = 0;
@@ -390,7 +388,7 @@ namespace SimpleIO {
 		for ( i = 0; i < 16; i++ )
 		{
 			if (( bufA[i] = ( unsigned char* )malloc( 16 )) == NULL ) {
-				/* error */ 
+				/* error */
 			}
 			/* init the rows here */
 			memset (bufA[i], 0x00, sizeof(&bufA[i]));
@@ -408,9 +406,9 @@ namespace SimpleIO {
 				tmp = 0x00;
 			}
 			// string
-			bufA[i][0] = MCP2200_SECRET_CONFIGURE; 
+			bufA[i][0] = MCP2200_SECRET_CONFIGURE;
 			bufA[i][1] = strType;
-			bufA[i][2] = i; 
+			bufA[i][2] = i;
 			bufA[i][3] = strA[k];
 			bufA[i][4] = tmp;
 			bufA[i][5] = strA[k+1];
@@ -426,11 +424,11 @@ namespace SimpleIO {
 			bufA[i][15] = 0xff;
 
 		}
-	
+
 		for (i=0; i<16; i++) {
 			hid_write (handle, bufA[i], 16);
-		}		
-	
+		}
+
 		return true;
 	}
 
@@ -466,7 +464,7 @@ namespace SimpleIO {
 
 	bool SimpleIOClass::SetVendorIDProductID(int vendorID, int productID) {
 		unsigned char vpbuf[16];
-	
+
 		vpbuf[0]=MCP2200_SECRET_CONFIGURE;
 		vpbuf[1]=MCP2200_CFG_PID_VID;
 		vpbuf[2]=vendorID & 0xFF;
@@ -483,18 +481,18 @@ namespace SimpleIO {
 		vpbuf[13]=0x00;
 		vpbuf[14]=0x00;
 		vpbuf[15]=0x00;
-	
+
 		if(hid_write(handle, vpbuf, MCP2200_HID_REPORT_SIZE) < 0)
 			return false;
 		else
-			return true;	
+			return true;
 	}
 
 	int SimpleIOClass::GetBaudRate(void) {
 		ReadAll();
-		return 12000000/((buf[8] << 8)+buf[9] + 1);	
+		return 12000000/((buf[8] << 8)+buf[9] + 1);
 	}
-	
+
 	int SimpleIOClass::GetRxLED(void) {
 		ReadAll();
 		if(buf[5] & 0b00001000)
@@ -518,7 +516,7 @@ namespace SimpleIO {
 			return 0;
 		}
 	}
-	
+
 	int SimpleIOClass::GetTxLED(void) {
 		ReadAll();
 		if(buf[5] & 0b00000100)
@@ -556,7 +554,7 @@ namespace SimpleIO {
 			return 1;
 		else
 			return 0;
-		
+
 	}
 	int SimpleIOClass::GetSuspend(void) {
 		ReadAll();
@@ -571,7 +569,7 @@ namespace SimpleIO {
 		ReadAll();
 		return buf[4];
 	}
-	
+
 	int SimpleIOClass::GetDefaultOutput(void) {
 		ReadAll();
 		return buf[6];
